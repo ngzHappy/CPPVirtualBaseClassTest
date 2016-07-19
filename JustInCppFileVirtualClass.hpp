@@ -7,8 +7,9 @@
 此文件在不同cpp文件中编译结果不同
 */
 
-#include "QuickCast.hpp"
 #include "VirtualClass.hpp"
+#include "QuickCast.hpp"
+
 
 namespace {
 /*强制编译器为每一个cpp文件生成不同的函数*/
