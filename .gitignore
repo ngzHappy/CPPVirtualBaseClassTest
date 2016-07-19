@@ -1,0 +1,10 @@
+*.tlog
+debug/
+release/
+*.vcxproj
+*.user
+*.bat
+*.filters
+*.db
+*.sln
+*.suo
