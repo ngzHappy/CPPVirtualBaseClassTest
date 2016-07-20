@@ -19,6 +19,8 @@ public:
     VirtualClass&operator=(VirtualClass&&)=default;
 public:
     virtual std::type_index concept_type_index() const=0;
+    VirtualClass * concept_class() { return this; }
+    const VirtualClass * concept_class()const { return this; }
 };
 
 template<typename _Type_>
@@ -64,12 +66,13 @@ public:
 
 template<typename _Type_>
 inline void check_cpp_virtual_base(_Type_ &&_x_) {
-    using _TYPE_= std::remove_cv_t<
+    using _TYPE_=std::remove_cv_t<
         std::remove_pointer_t<
         std::remove_reference_t<_Type_>>>;
 
-    using _CHECKTYPE_=std::conditional_t< 
-        std::has_virtual_destructor<_TYPE_>::value,
+    using _CHECKTYPE_=std::conditional_t<
+        (std::has_virtual_destructor<_TYPE_>::value&&!
+        (std::is_base_of<cpp_virtual_base::VirtualClass,_TYPE_>::value)),
         cpp_virtual_base::__debug::__private::MixCheck,
         cpp_virtual_base::__debug::__private::DoNothing
     >;
@@ -86,9 +89,9 @@ namespace __private {
 class DirectDelete {
 public:
     template<typename _Type_>
-    static void free(_Type_&&arg) { 
+    static void free(_Type_&&arg) {
 
-        using _TYPE_= std::remove_cv_t<
+        using _TYPE_=std::remove_cv_t<
             std::remove_pointer_t<
             std::remove_reference_t<_Type_>>>;
 
@@ -98,9 +101,9 @@ public:
         delete arg;
     }
     template<typename _Type_>
-    static void free_virtual(_Type_&&arg) { 
+    static void free_virtual(_Type_&&arg) {
 
-        using _TYPE_= std::remove_cv_t<
+        using _TYPE_=std::remove_cv_t<
             std::remove_pointer_t<
             std::remove_reference_t<_Type_>>>;
 
@@ -132,7 +135,7 @@ public:
     template<typename _Type_>
     static void free(_Type_&&arg) {
         check_cpp_virtual_base(arg);
-        DirectDelete::free_virtual(std::forward<_Type_>(arg)); 
+        DirectDelete::free_virtual(std::forward<_Type_>(arg));
     }
 };
 
@@ -186,8 +189,8 @@ public:
             }
             using _TYPE_::_TYPE_;
             _MIXTYPE_()=default;
-            _MIXTYPE_(const _TYPE_&arg) :_TYPE_(arg){}
-            _MIXTYPE_(_TYPE_&&arg) :_TYPE_(std::move(arg)){}
+            _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
+            _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
         };
         /*create mix type*/
         return DirectNew::create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
@@ -212,7 +215,7 @@ public:
             }
             using _TYPE_::_TYPE_;
             _MIXTYPE_()=default;
-            _MIXTYPE_(_TYPE_&&arg) :_TYPE_(std::move(arg)){}
+            _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
         };
         /*create mix type*/
         return DirectNew::create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
@@ -237,7 +240,7 @@ public:
             }
             using _TYPE_::_TYPE_;
             _MIXTYPE_()=default;
-            _MIXTYPE_(const _TYPE_&arg) :_TYPE_(arg){}
+            _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
         };
         /*create mix type*/
         return DirectNew::create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
@@ -270,7 +273,7 @@ inline auto new_class(_Args_&&...args)->_Type_ * {
 template<typename _Type_>
 inline void delete_class(_Type_&&arg) {
 
-    using _TYPE_= std::remove_cv_t<
+    using _TYPE_=std::remove_cv_t<
         std::remove_pointer_t<
         std::remove_reference_t<_Type_>>>;
 
