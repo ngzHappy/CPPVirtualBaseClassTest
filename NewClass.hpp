@@ -171,6 +171,8 @@ template<
         virtual std::type_index concept_type_index() const override {
             return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
         }
+        VirtualClass * concept_class() { return cpp_virtual_base::VirtualClass::concept_class(); }
+        const VirtualClass * concept_class()const { return cpp_virtual_base::VirtualClass::concept_class(); }
         using _TYPE_::_TYPE_;
         _MIXTYPE_()=default;
     };
@@ -191,6 +193,8 @@ class MixType<_Type_,true,true> {
         virtual std::type_index concept_type_index() const override {
             return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
         }
+        VirtualClass * concept_class() { return cpp_virtual_base::VirtualClass::concept_class(); }
+        const VirtualClass * concept_class()const { return cpp_virtual_base::VirtualClass::concept_class(); }
         using _TYPE_::_TYPE_;
         _MIXTYPE_()=default;
         _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
@@ -213,6 +217,8 @@ class MixType<_Type_,true,false> {
         virtual std::type_index concept_type_index() const override {
             return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
         }
+        VirtualClass * concept_class() { return cpp_virtual_base::VirtualClass::concept_class(); }
+        const VirtualClass * concept_class()const { return cpp_virtual_base::VirtualClass::concept_class(); }
         using _TYPE_::_TYPE_;
         _MIXTYPE_()=default;
         _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
@@ -234,6 +240,8 @@ class MixType<_Type_,false,true> {
         virtual std::type_index concept_type_index() const override {
             return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
         }
+        VirtualClass * concept_class() { return cpp_virtual_base::VirtualClass::concept_class(); }
+        const VirtualClass * concept_class()const { return cpp_virtual_base::VirtualClass::concept_class(); }
         using _TYPE_::_TYPE_;
         _MIXTYPE_()=default;
         _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
