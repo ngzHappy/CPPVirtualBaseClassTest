@@ -183,6 +183,43 @@ public:
 class M11;
 class M22;
 
+class Test_0 {};
+class Test_1 :public cpp_virtual_base::VirtualClass {
+public:
+    virtual std::type_index concept_type_index() const override {
+        return typeid(Test_1);
+    }
+};
+
+class Test_2 {
+public:
+    virtual~Test_2()=default;
+};
+
+namespace cpp_virtual_base {
+template<>
+class LogicalClass<Test_2> {
+public:
+    using type=Test_2;
+};
+}
+
+class Test_3 :public cpp_virtual_base::VirtualClass{
+public:
+    virtual std::type_index concept_type_index() const override {
+        return typeid(Test_3);
+    }
+};
+
+class Test_4 :
+    public Test_3,
+    public Test_1{
+public:
+    virtual std::type_index concept_type_index() const override {
+        return typeid(Test_4);
+    }
+};
+
 int main(int argc,char *argv[]) {
     Application app(argc,argv);
 
@@ -191,6 +228,25 @@ int main(int argc,char *argv[]) {
         memory::template new_class<int>(13)
                     );
     }
+
+    {
+            auto * t0=memory::template new_class<const Test_0>();
+            auto * t1=memory::template new_class<const Test_1>();
+            auto * t2=memory::template new_class<const Test_2>();
+            auto * t4=memory::template new_class<const Test_4>();
+            auto * xt2=dynamic_cast<const cpp_virtual_base::VirtualClass*>(t2);
+            (void)xt2;
+
+            check_cpp_virtual_base(t2);
+            check_cpp_virtual_base(nullptr);
+
+            memory::template delete_class(t0);
+            memory::template delete_class(t1);
+            memory::template delete_class(t2);
+            memory::template delete_class(t4);
+
+        }
+
 
     {
         VirtualClass vc;
