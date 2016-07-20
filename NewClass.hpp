@@ -7,6 +7,14 @@
 #include <typeindex>
 #include <type_traits>
 
+//namespace cpp_virtual_base {
+//template<>
+//class LogicalClass<_Type_> {
+//public:
+//    using type=_Type_;
+//};
+//}
+
 namespace cpp_virtual_base {
 
 class VirtualClass {
