@@ -155,25 +155,99 @@ public:
     }
 };
 
+template<
+    typename _Type_,
+    bool _is_move_construct_/*false*/,
+    bool _is_construct_/*false*/>
+    class MixType {
+    /*remove cv*/
+    using _TYPE_=std::remove_cv_t<
+        std::remove_reference_t<_Type_>>;
+    /*mix type*/
+    class _MIXTYPE_ :
+        public _TYPE_,
+        public cpp_virtual_base::VirtualClass {
+    public:
+        virtual std::type_index concept_type_index() const override {
+            return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
+        }
+        using _TYPE_::_TYPE_;
+        _MIXTYPE_()=default;
+    };
+    public:
+        using type=_MIXTYPE_;
+};
+
+template<typename _Type_>
+class MixType<_Type_,true,true> {
+    /*remove cv*/
+    using _TYPE_=std::remove_cv_t<
+        std::remove_reference_t<_Type_>>;
+    /*mix type*/
+    class _MIXTYPE_ :
+        public _TYPE_,
+        public cpp_virtual_base::VirtualClass {
+    public:
+        virtual std::type_index concept_type_index() const override {
+            return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
+        }
+        using _TYPE_::_TYPE_;
+        _MIXTYPE_()=default;
+        _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
+        _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
+    };
+public:
+    using type=_MIXTYPE_;
+};
+
+template<typename _Type_>
+class MixType<_Type_,true,false> {
+    /*remove cv*/
+    using _TYPE_=std::remove_cv_t<
+        std::remove_reference_t<_Type_>>;
+    /*mix type*/
+    class _MIXTYPE_ :
+        public _TYPE_,
+        public cpp_virtual_base::VirtualClass {
+    public:
+        virtual std::type_index concept_type_index() const override {
+            return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
+        }
+        using _TYPE_::_TYPE_;
+        _MIXTYPE_()=default;
+        _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
+    };
+public:
+    using type=_MIXTYPE_;
+};
+
+template<typename _Type_>
+class MixType<_Type_,false,true> {
+    /*remove cv*/
+    using _TYPE_=std::remove_cv_t<
+        std::remove_reference_t<_Type_>>;
+    /*mix type*/
+    class _MIXTYPE_ :
+        public _TYPE_,
+        public cpp_virtual_base::VirtualClass {
+    public:
+        virtual std::type_index concept_type_index() const override {
+            return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
+        }
+        using _TYPE_::_TYPE_;
+        _MIXTYPE_()=default;
+        _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
+    };
+public:
+    using type=_MIXTYPE_;
+};
+
 template<bool _is_move_construct_=false,bool _is_construct_=false>
 class MixNew {
 public:
     template<typename _Type_,typename ... _Args_>
     static auto create(_Args_&&...args) {
-        /*remove cv*/
-        using _TYPE_=std::remove_cv_t<
-            std::remove_reference_t<_Type_>>;
-        /*mix type*/
-        class _MIXTYPE_ :
-            public _TYPE_,
-            public cpp_virtual_base::VirtualClass {
-        public:
-            virtual std::type_index concept_type_index() const override {
-                return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
-            }
-            using _TYPE_::_TYPE_;
-            _MIXTYPE_()=default;
-        };
+        using _MIXTYPE_=typename MixType<_Type_,_is_move_construct_,_is_construct_>::type;
         /*create mix type*/
         return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
@@ -184,22 +258,7 @@ class MixNew<true,true> {
 public:
     template<typename _Type_,typename ... _Args_>
     static auto create(_Args_&&...args) {
-        /*remove cv*/
-        using _TYPE_=std::remove_cv_t<
-            std::remove_reference_t<_Type_>>;
-        /*mix type*/
-        class _MIXTYPE_ :
-            public _TYPE_,
-            public cpp_virtual_base::VirtualClass {
-        public:
-            virtual std::type_index concept_type_index() const override {
-                return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
-            }
-            using _TYPE_::_TYPE_;
-            _MIXTYPE_()=default;
-            _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
-            _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
-        };
+        using _MIXTYPE_=typename MixType<_Type_,true,true>::type;
         /*create mix type*/
         return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
@@ -210,21 +269,7 @@ class MixNew<true,false> {
 public:
     template<typename _Type_,typename ... _Args_>
     static auto create(_Args_&&...args) {
-        /*remove cv*/
-        using _TYPE_=std::remove_cv_t<
-            std::remove_reference_t<_Type_>>;
-        /*mix type*/
-        class _MIXTYPE_ :
-            public _TYPE_,
-            public cpp_virtual_base::VirtualClass {
-        public:
-            virtual std::type_index concept_type_index() const override {
-                return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
-            }
-            using _TYPE_::_TYPE_;
-            _MIXTYPE_()=default;
-            _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
-        };
+        using _MIXTYPE_=typename MixType<_Type_,true,false>::type;
         /*create mix type*/
         return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
@@ -235,21 +280,7 @@ class MixNew<false,true> {
 public:
     template<typename _Type_,typename ... _Args_>
     static auto create(_Args_&&...args) {
-        /*remove cv*/
-        using _TYPE_=std::remove_cv_t<
-            std::remove_reference_t<_Type_>>;
-        /*mix type*/
-        class _MIXTYPE_ :
-            public _TYPE_,
-            public cpp_virtual_base::VirtualClass {
-        public:
-            virtual std::type_index concept_type_index() const override {
-                return typeid(typename cpp_virtual_base::LogicalClass<_TYPE_>::type);
-            }
-            using _TYPE_::_TYPE_;
-            _MIXTYPE_()=default;
-            _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
-        };
+        using _MIXTYPE_=typename MixType<_Type_,false,true>::type;
         /*create mix type*/
         return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
@@ -265,9 +296,34 @@ using memory::template delete_class replace delete
 */
 class memory {
 public:
+
+    template<typename _Type_>
+    class new_type {
+        static_assert(std::is_reference<_Type_>::value==false,
+            "_Type_ should not be a ref");
+    public:
+        using type=std::conditional_t<
+            std::has_virtual_destructor<_Type_>::value,
+            std::conditional_t<
+            std::is_base_of<cpp_virtual_base::VirtualClass,_Type_>::value,
+            _Type_/*if is virtualclass*/,
+            typename cpp_virtual_base::__private::MixType<
+            _Type_,
+            std::is_move_constructible<_Type_>::value,
+            std::is_constructible<_Type_>::value
+            >::type/*if is virtual but not virtualclass*/
+            >,
+            _Type_/*if is not virtual class*/
+        >;
+    };
+
+    template<typename _Type_>
+    using new_type_t=typename new_type<_Type_>::type;
+
     template<typename _Type_,typename ..._Args_>
     static inline auto new_class(_Args_&&...args)->_Type_ * {
-
+        static_assert(std::is_reference<_Type_>::value==false,
+            "_Type_ should not be a ref");
         using _VARNEWTYPE_=std::conditional_t<
             std::has_virtual_destructor<_Type_>::value,
             std::conditional_t<

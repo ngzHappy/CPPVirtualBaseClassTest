@@ -13,7 +13,8 @@ HEADERS  += MainWindow.hpp \
     Test0.hpp \
     JustInCppFileVirtualClass.hpp \
     QuickCast.hpp \
-    VirtualClass.hpp
+    VirtualClass.hpp \
+    NewClass.hpp
 
 FORMS    += MainWindow.ui
 
