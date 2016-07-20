@@ -251,40 +251,47 @@ public:
 
 }
 
-template<typename _Type_,typename ..._Args_>
-inline auto new_class(_Args_&&...args)->_Type_ * {
+/*
+using memory::$new_class    replace new
+using memory::$delete_class replace delete
+*/
+class memory {
+public:
+    template<typename _Type_,typename ..._Args_>
+    static inline auto $new_class(_Args_&&...args)->_Type_ * {
 
-    using _VARNEWTYPE_=std::conditional_t<
-        std::has_virtual_destructor<_Type_>::value,
-        std::conditional_t<
-        std::is_base_of<cpp_virtual_base::VirtualClass,_Type_>::value,
-        cpp_virtual_base::__private::DirectMixNew/*if is VirtualClass*/,
-        cpp_virtual_base::__private::MixNew<
-        std::is_move_constructible<_Type_>::value,
-        std::is_constructible<_Type_>::value
-        >/*if is virtual class but not VirtualClass*/
-        >,
-        cpp_virtual_base::__private::DirectNew/*if is not abstract class*/
-    >;
+        using _VARNEWTYPE_=std::conditional_t<
+            std::has_virtual_destructor<_Type_>::value,
+            std::conditional_t<
+            std::is_base_of<cpp_virtual_base::VirtualClass,_Type_>::value,
+            cpp_virtual_base::__private::DirectMixNew/*if is VirtualClass*/,
+            cpp_virtual_base::__private::MixNew<
+            std::is_move_constructible<_Type_>::value,
+            std::is_constructible<_Type_>::value
+            >/*if is virtual class but not VirtualClass*/
+            >,
+            cpp_virtual_base::__private::DirectNew/*if is not abstract class*/
+        >;
 
-    return _VARNEWTYPE_::create<_Type_>(std::forward<_Args_>(args)...);
-}
+        return _VARNEWTYPE_::create<_Type_>(std::forward<_Args_>(args)...);
+    }
 
-template<typename _Type_>
-inline void delete_class(_Type_&&arg) {
+    template<typename _Type_>
+    static inline void $delete_class(_Type_&&arg) {
 
-    using _TYPE_=std::remove_cv_t<
-        std::remove_pointer_t<
-        std::remove_reference_t<_Type_>>>;
+        using _TYPE_=std::remove_cv_t<
+            std::remove_pointer_t<
+            std::remove_reference_t<_Type_>>>;
 
-    using _VARDELETECLASS_=std::conditional_t<
-        std::has_virtual_destructor<_TYPE_>::value,
-        cpp_virtual_base::__private::MixDelete,
-        cpp_virtual_base::__private::DirectDelete
-    >;
+        using _VARDELETECLASS_=std::conditional_t<
+            std::has_virtual_destructor<_TYPE_>::value,
+            cpp_virtual_base::__private::MixDelete,
+            cpp_virtual_base::__private::DirectDelete
+        >;
 
-    return _VARDELETECLASS_::free(std::forward<_Type_>(arg));
-}
+        return _VARDELETECLASS_::free(std::forward<_Type_>(arg));
+    }
+};
 
 #endif
 
