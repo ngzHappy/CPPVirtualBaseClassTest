@@ -233,7 +233,7 @@ int main(int argc,char *argv[]) {
         static_assert(std::is_same<memory::new_type_t<int>,int>::value,"?");
         static_assert(std::is_same<memory::new_type_t<Test_1>,Test_1>::value,"?");
         static_assert(std::is_same<memory::new_type_t<Test_2>,Test_2>::value==false,"?");
-        Test_2 * value = new memory::new_type_t<Test_2>{};
+        Test_2 * value = new memory::new_t<Test_2>{};
         delete value;
     }
 

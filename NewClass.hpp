@@ -320,6 +320,9 @@ public:
     template<typename _Type_>
     using new_type_t=typename new_type<_Type_>::type;
 
+    template<typename _Type_>
+    using new_t=new_type_t<_Type_>;
+
     template<typename _Type_,typename ..._Args_>
     static inline auto new_class(_Args_&&...args)->_Type_ * {
         static_assert(std::is_reference<_Type_>::value==false,
