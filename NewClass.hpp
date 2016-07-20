@@ -77,7 +77,7 @@ inline void check_cpp_virtual_base(_Type_ &&_x_) {
         cpp_virtual_base::__debug::__private::DoNothing
     >;
 
-    _CHECKTYPE_::check(std::forward<_Type_>(_x_));
+    _CHECKTYPE_::template check(std::forward<_Type_>(_x_));
 }
 
 #endif
@@ -135,7 +135,7 @@ public:
     template<typename _Type_>
     static void free(_Type_&&arg) {
         check_cpp_virtual_base(arg);
-        DirectDelete::free_virtual(std::forward<_Type_>(arg));
+        DirectDelete::template free_virtual(std::forward<_Type_>(arg));
     }
 };
 
@@ -143,7 +143,7 @@ class DirectMixNew {
 public:
     template<typename _Type_,typename ... _Args_>
     static auto create(_Args_&&...args) {
-        return DirectNew::create_virtual<_Type_>(std::forward<_Args_>(args)...);
+        return DirectNew::template create_virtual<_Type_>(std::forward<_Args_>(args)...);
     }
 };
 
@@ -167,7 +167,7 @@ public:
             _MIXTYPE_()=default;
         };
         /*create mix type*/
-        return DirectNew::create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
+        return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
 };
 
@@ -193,7 +193,7 @@ public:
             _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
         };
         /*create mix type*/
-        return DirectNew::create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
+        return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
 };
 
@@ -218,7 +218,7 @@ public:
             _MIXTYPE_(_TYPE_&&arg):_TYPE_(std::move(arg)) {}
         };
         /*create mix type*/
-        return DirectNew::create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
+        return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
 };
 
@@ -243,7 +243,7 @@ public:
             _MIXTYPE_(const _TYPE_&arg):_TYPE_(arg) {}
         };
         /*create mix type*/
-        return DirectNew::create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
+        return DirectNew::template create_virtual<_MIXTYPE_>(std::forward<_Args_>(args)...);
     }
 };
 
@@ -252,13 +252,13 @@ public:
 }
 
 /*
-using memory::$new_class    replace new
-using memory::$delete_class replace delete
+using memory::template new_class    replace new
+using memory::template delete_class replace delete
 */
 class memory {
 public:
     template<typename _Type_,typename ..._Args_>
-    static inline auto $new_class(_Args_&&...args)->_Type_ * {
+    static inline auto new_class(_Args_&&...args)->_Type_ * {
 
         using _VARNEWTYPE_=std::conditional_t<
             std::has_virtual_destructor<_Type_>::value,
@@ -273,11 +273,11 @@ public:
             cpp_virtual_base::__private::DirectNew/*if is not abstract class*/
         >;
 
-        return _VARNEWTYPE_::create<_Type_>(std::forward<_Args_>(args)...);
+        return _VARNEWTYPE_::template create<_Type_>(std::forward<_Args_>(args)...);
     }
 
     template<typename _Type_>
-    static inline void $delete_class(_Type_&&arg) {
+    static inline void delete_class(_Type_&&arg) {
 
         using _TYPE_=std::remove_cv_t<
             std::remove_pointer_t<
@@ -289,7 +289,7 @@ public:
             cpp_virtual_base::__private::DirectDelete
         >;
 
-        return _VARDELETECLASS_::free(std::forward<_Type_>(arg));
+        return _VARDELETECLASS_::template free(std::forward<_Type_>(arg));
     }
 };
 
