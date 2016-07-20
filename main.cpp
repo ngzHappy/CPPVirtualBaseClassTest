@@ -4,6 +4,7 @@
 #include <QtCore/qdebug.h>
 #include <QtCore/qtimer.h>
 #include <atomic>
+#include "NewClass.hpp"
 
 class TestEvent :public QEvent {
     Callable call_;
@@ -186,6 +187,12 @@ int main(int argc,char *argv[]) {
     Application app(argc,argv);
 
     {
+        memory::template delete_class(
+        memory::template new_class<int>(13)
+                    );
+    }
+
+    {
         VirtualClass vc;
         vc.getData<QObject*>();
     }
@@ -200,7 +207,7 @@ int main(int argc,char *argv[]) {
 
         V1 & v1=v3;
         VirtualBase & vb=v1;
-        
+
         quickCast<V3&>(vb);
 
     }
